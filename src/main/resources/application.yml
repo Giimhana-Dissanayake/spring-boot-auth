@@ -1,3 +1,6 @@
+jwt:
+  secret: 'hello-secret'
+
 server:
   port:8081
 
