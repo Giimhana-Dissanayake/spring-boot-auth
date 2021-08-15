@@ -18,7 +18,7 @@ import java.util.Date;
 
 @Service
 @Transactional
-@Qualifier("UserDetailsService")
+@Qualifier("userDetailsService")
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     private Logger LOGGER = LoggerFactory.getLogger(getClass());
