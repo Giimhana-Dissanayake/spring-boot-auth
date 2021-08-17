@@ -1,7 +1,11 @@
-package com.example.springbootauth.exception.domain;
+package com.example.springbootauth.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.example.springbootauth.domain.HttpResponse;
+import com.example.springbootauth.exception.domain.EmailExistException;
+import com.example.springbootauth.exception.domain.EmailNotFoundException;
+import com.example.springbootauth.exception.domain.UserNameExistException;
+import com.example.springbootauth.exception.domain.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;

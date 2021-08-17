@@ -4,6 +4,7 @@ import com.example.springbootauth.domain.User;
 import com.example.springbootauth.domain.UserPrincipal;
 import com.example.springbootauth.repository.UserRepository;
 import com.example.springbootauth.service.UserService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -45,5 +47,35 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return userPrincipal;
         }
 
+    }
+
+    @Override
+    public User register(String firstName, String lastName, String userName, String email) {
+        validateNewUserNameAndEmail();
+        return null;
+    }
+
+    private User validateNewUserNameAndEmail(String currentUserName, String newUserName, String newEmail) {
+        if(StringUtils.isNotBlank(currentUserName)){
+            User currentUser = findUserByUsername(currentUserName);
+            if(currentUser == null){
+                throw new UsernameNotFoundException("No user found by username " + currentUserName);
+            }
+        }
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return null;
+    }
+
+    @Override
+    public User findUserByUsername(String username) {
+        return null;
+    }
+
+    @Override
+    public User findUserByEmail(String email) {
+        return null;
     }
 }
