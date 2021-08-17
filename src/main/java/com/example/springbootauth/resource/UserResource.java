@@ -6,7 +6,9 @@ import com.example.springbootauth.exception.domain.EmailExistException;
 import com.example.springbootauth.exception.domain.UserNameExistException;
 import com.example.springbootauth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
+import static org.springframework.http.HttpStatus.OK;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +26,7 @@ public class UserResource extends ExceptionHandling {
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody User user) throws EmailExistException, UserNameExistException {
         User newUser = userService.register(user.getFirstName(), user.getLastName(), user.getUserName(), user.getEmail());
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
+        return new ResponseEntity<>(newUser, OK);
     }
 
 
