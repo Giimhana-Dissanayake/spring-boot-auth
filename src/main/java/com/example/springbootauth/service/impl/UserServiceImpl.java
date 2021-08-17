@@ -2,6 +2,8 @@ package com.example.springbootauth.service.impl;
 
 import com.example.springbootauth.domain.User;
 import com.example.springbootauth.domain.UserPrincipal;
+import com.example.springbootauth.exception.domain.EmailExistException;
+import com.example.springbootauth.exception.domain.UserNameExistException;
 import com.example.springbootauth.repository.UserRepository;
 import com.example.springbootauth.service.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -50,17 +52,37 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User register(String firstName, String lastName, String userName, String email) {
-        validateNewUserNameAndEmail();
+    public User register(String firstName, String lastName, String userName, String email) throws EmailExistException, UserNameExistException {
+        validateNewUserNameAndEmail(StringUtils.EMPTY, userName, email);
         return null;
     }
 
-    private User validateNewUserNameAndEmail(String currentUserName, String newUserName, String newEmail) {
-        if(StringUtils.isNotBlank(currentUserName)){
-            User currentUser = findUserByUsername(currentUserName);
-            if(currentUser == null){
+    private User validateNewUserNameAndEmail(String currentUserName, String newUserName, String newEmail) throws
+            UsernameNotFoundException, UserNameExistException, EmailExistException {
+        if (StringUtils.isNotBlank(currentUserName)) {
+            User currentUser = findUserByUserName(currentUserName);
+            if (currentUser == null) {
                 throw new UsernameNotFoundException("No user found by username " + currentUserName);
             }
+            User userByUserName = findUserByUserName(newUserName);
+            if (userByUserName != null && !currentUser.getId().equals(userByUserName.getId())) {
+                throw new UserNameExistException("Username already exists");
+            }
+            User userByEmail = findUserByEmail(newEmail);
+            if (userByEmail != null && !currentUser.getId().equals(userByEmail.getId())) {
+                throw new EmailExistException("Email already exists");
+            }
+            return currentUser;
+        } else {
+            User userByUserName = findUserByUserName(newUserName);
+            if (userByUserName != null) {
+                throw new UserNameExistException("Username already exists");
+            }
+            User userByEmail = findUserByEmail(newEmail);
+            if (userByUserName != null) {
+                throw new EmailExistException("Email already exists");
+            }
+            return null;
         }
     }
 
@@ -70,7 +92,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User findUserByUsername(String username) {
+    public User findUserByUserName(String username) {
         return null;
     }
 
