@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User register(String firstName, String lastName, String userName, String email) throws EmailExistException, UserNameExistException {
+    public User register(String firstName, String lastName, String userName, String email) throws EmailExistException, UserNameExistException,UsernameNotFoundException {
         validateNewUserNameAndEmail(StringUtils.EMPTY, userName, email);
         User user = new User();
         user.setUserId(generateUserId());
@@ -70,6 +70,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         String encodedPassword = encodePassword(password);
         user.setFirstName(firstName);
         user.setLastName(lastName);
+        user.setUserName(userName);
         user.setEmail(email);
         user.setJoinDate(new Date());
         user.setPassword(encodedPassword);
