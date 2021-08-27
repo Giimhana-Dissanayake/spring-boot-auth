@@ -2,7 +2,7 @@ jwt:
   secret: 'hello-secret'
 
 server:
-  port: 8085
+  port: 8081
 #  error:
 #    whitelabel:
 #      enabled: false
