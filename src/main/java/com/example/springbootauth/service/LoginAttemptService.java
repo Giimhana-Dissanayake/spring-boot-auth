@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -23,5 +24,22 @@ public class LoginAttemptService {
             }
         });
     }
+
+    public void evictUserFromLoginAttemptCache(String username) {
+        loginAttemptCache.invalidate(username);
+    }
+
+
+    public void addUserToLoginAttemptCache(String username) throws ExecutionException {
+        int attempts = 0;
+        attempts = ATTEMPTS_INCREMENT + loginAttemptCache.get(username);
+
+        loginAttemptCache.put(username, attempts);
+    }
+
+    public boolean hasExceededMaxAttempt(String username) throws ExecutionException {
+        return loginAttemptCache.get(username) >= MAXIMUM_NUMBER_OF_ATTEMPTS;
+    }
+
 
 }
