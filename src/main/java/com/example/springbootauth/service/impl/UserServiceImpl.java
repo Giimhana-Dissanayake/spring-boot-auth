@@ -6,6 +6,7 @@ import com.example.springbootauth.domain.UserPrincipal;
 import com.example.springbootauth.exception.domain.EmailExistException;
 import com.example.springbootauth.exception.domain.UserNameExistException;
 import com.example.springbootauth.repository.UserRepository;
+import com.example.springbootauth.service.LoginAttemptService;
 import com.example.springbootauth.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,15 +33,16 @@ import static com.example.springbootauth.enumaration.Role.ROLE_USER;
 @Qualifier("userDetailsService")
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-
     private Logger LOGGER = LoggerFactory.getLogger(getClass());
     private UserRepository userRepository;
     private BCryptPasswordEncoder passwordEncoder;
+    private LoginAttemptService loginAttemptService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, LoginAttemptService loginAttemptService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.loginAttemptService = loginAttemptService;
     }
 
     @Override
@@ -51,6 +53,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             LOGGER.error(NO_USER_FOUND_BY_USERNAME + username);
             throw new UsernameNotFoundException(NO_USER_FOUND_BY_USERNAME + username);
         } else {
+            validateLoginAttempt(user);
             user.setLastLoginDateDisplay(user.getLastLoginDate());
             user.setLastLoginDate(new Date());
             userRepository.save(user);
@@ -59,6 +62,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return userPrincipal;
         }
 
+    }
+
+    private void validateLoginAttempt(User user) {
+        if(user.isNotLocked()){
+            if(loginAttemptService.hasExceededMaxAttempt(user.getUserName())){
+                user.setNotLocked(false);
+            }else{
+                user.setNotLocked(true);
+            }
+        }else{
+            loginAttemptService.evictUserFromLoginAttemptCache(user.getUserName());
+        }
     }
 
     @Override
